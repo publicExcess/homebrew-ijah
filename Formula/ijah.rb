@@ -32,17 +32,25 @@ class Ijah < Formula
     system "make"
     rm_r %w[build/obj build/air] # intermediate objects; the shim build below needs only the headers and the library
     libexec.install Dir["*"]
-    cd libexec do
-      # the server's Python environment (requirements.txt; huggingface_hub comes with transformers)
-      system "/bin/zsh", "tools/setup.sh", formula_opt_bin("python@3.11")/"python3.11"
-      # the snapshot shim the server loads (prefix reuse across restarts), built against this library
-      system "/bin/zsh", "tools/serve.sh", "build"
-    end
-
+    # the server's snapshot shim (prefix reuse across restarts), built against this library
+    cd(libexec) { system "/bin/zsh", "tools/serve.sh", "build" }
+    py = formula_opt_bin("python@3.11")/"python3.11"
+    # The CLI is stdlib only and runs on python@3.11. The server's venv (requirements.txt) lives in var, outside the
+    # keg: Homebrew rewrites the load paths of every Mach-O file in a keg, which breaks the dylibs pip wheels ship.
+    # It is made on the first `ijah serve` / `ijah doctor`, and rebuilt when requirements.txt changes.
     (bin/"ijah").write <<~SH
       #!/bin/bash
-      export IJAH_PY="#{opt_libexec}/.venv/bin/python"
-      exec "#{opt_libexec}/.venv/bin/python" "#{opt_libexec}/tools/ijah" "$@"
+      V="#{var}/ijah/venv"
+      R="#{opt_libexec}/requirements.txt"
+      case "$1" in serve|doctor)
+        if [ ! -x "$V/bin/python" ] || ! cmp -s "$R" "$V/requirements.txt"; then
+          echo "ijah: setting up the server's Python environment in $V (a minute or two, once)" >&2
+          rm -rf "$V" && "#{py}" -m venv "$V" && "$V/bin/python" -m pip install -q --upgrade pip &&
+            "$V/bin/python" -m pip install -q -r "$R" && cp "$R" "$V/requirements.txt" || { rm -rf "$V"; exit 1; }
+        fi ;;
+      esac
+      export IJAH_PY="$V/bin/python"
+      exec "#{py}" "#{opt_libexec}/tools/ijah" "$@"
     SH
     bin.install_symlink libexec/"build/engine-cli"
     lib.install_symlink libexec/"build/libengine.dylib", libexec/"build/engine.metallib"
