@@ -32,6 +32,7 @@ class Ijah < Formula
     end
 
     system "make"
+    rm_r %w[build/obj build/air] # intermediate objects; the shim build below needs only the headers and the library
     libexec.install Dir["*"]
     cd libexec do
       # the server's Python environment (requirements.txt; huggingface_hub comes with transformers)
