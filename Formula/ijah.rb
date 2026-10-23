@@ -1,8 +1,8 @@
 class Ijah < Formula
   desc "Raw-Metal inference engine for Qwen3.8-Flash-Next and Swift-1.5 on Apple M5"
   homepage "https://github.com/publicExcess/ijah"
-  url "https://github.com/publicExcess/ijah/archive/refs/tags/v0.2.0.tar.gz"
-  sha256 "471f5bb78953d01f2fa37371422351a56499dd0c6f2b2bb357d17af718ef880a"
+  url "https://github.com/publicExcess/ijah/archive/refs/tags/v0.2.1.tar.gz"
+  sha256 "1660e6c512df1bc61c260b9a8a6df5ed293fb41ad1abed1be58c726ea40ad937"
   license "Apache-2.0"
   head "https://github.com/publicExcess/ijah.git", branch: "main"
 
