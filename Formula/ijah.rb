@@ -1,10 +1,8 @@
 class Ijah < Formula
   desc "Raw-Metal inference engine for Qwen3.8-Flash-Next and Swift-1.5 on Apple M5"
   homepage "https://github.com/publicExcess/ijah"
-  # PLACEHOLDER: the v0.2.0 tag does not exist yet. After tagging publicExcess/ijah v0.2.0, set the real checksum:
-  #   curl -sL https://github.com/publicExcess/ijah/archive/refs/tags/v0.2.0.tar.gz | shasum -a 256
   url "https://github.com/publicExcess/ijah/archive/refs/tags/v0.2.0.tar.gz"
-  sha256 "0000000000000000000000000000000000000000000000000000000000000000"
+  sha256 "471f5bb78953d01f2fa37371422351a56499dd0c6f2b2bb357d17af718ef880a"
   license "Apache-2.0"
   head "https://github.com/publicExcess/ijah.git", branch: "main"
 
